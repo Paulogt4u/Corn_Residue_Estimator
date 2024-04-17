@@ -29,6 +29,11 @@ jobs:
           source venv/bin/activate
           pytest
 
+      - name: Use API tool with secret
+        run: |
+          echo "Using a secret in a workflow"
+          use-my-tool --api-key ${{ secrets.ESTIMATOR_SECRET }}
+
       - name: Prepare deployment artifact
         run: |
           tar -czvf python-app.tar.gz --exclude=venv ./*
@@ -62,6 +67,7 @@ jobs:
           app-name: 'CRestimator'
           slot-name: 'Production'
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE }}
+
 
 # Notes and Links
 # Docs for Azure Web Apps Deploy action: https://github.com/Azure/webapps-deploy
