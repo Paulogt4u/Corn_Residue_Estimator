@@ -7,13 +7,13 @@ on:
   workflow_dispatch:
 
 jobs:
-  build:
+  build-and-deploy:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v2
 
-      - name: Set up Python version
-        uses: actions/setup-python@v5
+      - name: Set up Python
+        uses: actions/setup-python@v2
         with:
           python-version: '3.9'
 
@@ -25,35 +25,6 @@ jobs:
       - name: Install Azure CLI
         run: |
           curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
-
-      - name: Login to Azure CLI using username and password
-        run: |
-          az login -u ${{ secrets.AZURE_USERNAME }} -p ${{ secrets.AZURE_PASSWORD }}
-
-      - name: Prepare deployment artifact
-        run: |
-          tar -czvf python-app.tar.gz --exclude=venv ./*
-
-      - name: Upload artifact for deployment jobs
-        uses: actions/upload-artifact@v3
-        with:
-          name: python-app
-          path: python-app.tar.gz
-
-  deploy:
-    runs-on: ubuntu-latest
-    needs: build
-    environment:
-      name: 'Production'
-      url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
-    steps:
-      - name: Download artifact from build job
-        uses: actions/download-artifact@v3
-        with:
-          name: python-app
-
-      - name: Extract artifact for deployment
-        run: tar -xzvf python-app.tar.gz
 
       - name: Azure Login using username and password
         uses: azure/login@v1
@@ -67,6 +38,7 @@ jobs:
           app-name: 'CRestimator'
           slot-name: 'Production'
           publish-profile: ${{ secrets.AZURE_APP_PUBLISH_PROFILE }}
+
 
 # Notes and Links
 # Docs for Azure Web Apps Deploy action: https://github.com/Azure/webapps-deploy
