@@ -1,0 +1,86 @@
+name: Build and deploy Python app to Azure Web App - CRestimator
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python version
+        uses: actions/setup-python@v5 # Updated to the latest version supporting Node.js 20
+        with:
+          python-version: '3.9'
+
+      - name: Install dependencies
+        run: |
+          python -m venv venv
+          source venv/bin/activate
+          pip install --upgrade pip
+          pip install --no-cache-dir -r requirements.txt.
+
+      - name: Debug output
+        run: |
+          echo "List files in the current directory:"
+          ls -alh
+          echo "Check Python version:"
+          python --version
+          echo "Check installed packages:"
+          pip list
+
+
+      - name: Run tests
+        run: |
+          source venv/bin/activate
+          pytest
+
+      - name: Use API tool with secret
+        run: |
+          echo "Using a secret in a workflow"
+          use-my-tool --api-key ${{ secrets.ESTIMATOR_SECRET }}
+
+      - name: Prepare deployment artifact
+        run: |
+          tar -czvf python-app.tar.gz --exclude=venv ./*
+
+      - name: Upload artifact for deployment jobs
+        uses: actions/upload-artifact@v3
+        with:
+          name: python-app
+          path: python-app.tar.gz
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: build
+    environment:
+      name: 'Production'
+      url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
+
+    steps:
+      - name: Download artifact from build job
+        uses: actions/download-artifact@v3
+        with:
+          name: python-app
+
+      - name: Extract artifact for deployment
+        run: tar -xzvf python-app.tar.gz
+
+      - name: 'Deploy to Azure Web App'
+        uses: azure/webapps-deploy@v2
+        id: deploy-to-webapp
+        with:
+          app-name: 'CRestimator'
+          slot-name: 'Production'
+          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE }}
+
+
+# Notes and Links
+# Docs for Azure Web Apps Deploy action: https://github.com/Azure/webapps-deploy
+# More GitHub Actions for Azure: https://github.com/Azure/actions
+# Info on Python, GitHub Actions, and Azure App Service: https://aka.ms/python-webapps-actions
