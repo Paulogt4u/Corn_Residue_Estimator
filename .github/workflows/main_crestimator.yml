@@ -22,27 +22,13 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Debug output
-        run: |
-          echo "List files in the current directory:"
-          ls -alh
-          echo "Check Python version:"
-          python --version
-          echo "Check installed packages:"
-          pip list
-
       - name: Install Azure CLI
         run: |
           curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
 
-      - name: Verify Azure CLI installation
+      - name: Login to Azure CLI using username and password
         run: |
-          az --version
-
-      - name: Authenticate Azure CLI
-        run: |
-          echo "Using Azure CLI in the workflow"
-          az login --service-principal -u ${{ secrets.AZURE_CLIENT_ID }} -p ${{ secrets.AZURE_SECRET }} --tenant ${{ secrets.AZURE_TENANT_ID }}
+          az login -u ${{ secrets.AZURE_USERNAME }} -p ${{ secrets.AZURE_PASSWORD }}
 
       - name: Prepare deployment artifact
         run: |
@@ -59,7 +45,7 @@ jobs:
     needs: build
     environment:
       name: 'Production'
-      url: ${{ steps.deploy-to-webapp.outputs.webapp-url }} # updated to directly use the URL
+      url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
     steps:
       - name: Download artifact from build job
         uses: actions/download-artifact@v3
@@ -74,11 +60,7 @@ jobs:
         with:
           app-name: 'CRestimator'
           slot-name: 'Production'
-          publish-profile: ${{ secrets.RESIDUE_ESTIMATOR}}
-
-      - name: Verify Deployment
-        run: |
-          curl -s https://crestimator.azurewebsites.net | grep 'Expected Content' || echo "Deployment check failed!"
+          publish-profile: ${{ secrets.AZURE_APP_PUBLISH_PROFILE }}
 
 # Notes and Links
 # Docs for Azure Web Apps Deploy action: https://github.com/Azure/webapps-deploy
