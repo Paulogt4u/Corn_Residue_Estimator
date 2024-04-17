@@ -34,11 +34,7 @@ jobs:
       - name: Install use-my-tool
         run: |
           sudo apt-get update
-          sudo apt-get install use-my-tool-package-name # Adjust accordingly
-
-      - name: Make use-my-tool executable
-        run: |
-          chmod +x /path/to/use-my-tool # Make sure the path is correct
+          sudo apt-get install use-my-tool-package-name
 
       - name: Verify tool installation
         run: |
@@ -66,7 +62,6 @@ jobs:
     environment:
       name: 'Production'
       url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
-
     steps:
       - name: Download artifact from build job
         uses: actions/download-artifact@v3
@@ -78,10 +73,14 @@ jobs:
 
       - name: Deploy to Azure Web App
         uses: azure/webapps-deploy@v2
-        id: deploy-to-webapp
+        with:
+          app-name: 'CRestimator'
+          slot-name: 'Production'
+          publish-profile: ${{ secrets.ESTIMATOR_SECRET}}  # Corrected secret name
 
 # Notes and Links
 # Docs for Azure Web Apps Deploy action: https://github.com/Azure/webapps-deploy
 # More GitHub Actions for Azure: https://github.com/Azure/actions
 # Info on Python, GitHub Actions, and Azure App Service: https://aka.ms/python-webapps-actions
+
       
