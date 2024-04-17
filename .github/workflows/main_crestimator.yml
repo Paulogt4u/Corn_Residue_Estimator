@@ -29,15 +29,8 @@ jobs:
       - name: Azure Login using username and password
         uses: azure/login@v1
         with:
-          username: ${{ secrets.AZURE_USERNAME }}
-          password: ${{ secrets.AZURE_PASSWORD }}
-
-      - name: Deploy to Azure Web App
-        uses: azure/webapps-deploy@v2
-        with:
-          app-name: 'CRestimator'
-          slot-name: 'Production'
-          publish-profile: ${{ secrets.AZURE_APP_PUBLISH_PROFILE }}
+          username: ${{ secrets.AZURE_USERNAME}}
+          password: ${{ secrets.AZURE_PASSWORD}}
 
 
 # Notes and Links
