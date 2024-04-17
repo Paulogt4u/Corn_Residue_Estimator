@@ -67,7 +67,7 @@ jobs:
         with:
           app-name: 'CRestimator'
           slot-name: 'Production'
-          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE }}
+          publish-profile: ${{ secrets.ESTIMATOR_SECRET}}
 
 # Notes and Links
 # Docs for Azure Web Apps Deploy action: https://github.com/Azure/webapps-deploy
