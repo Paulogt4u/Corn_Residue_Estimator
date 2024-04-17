@@ -34,7 +34,7 @@ jobs:
       - name: Install use-my-tool
         run: |
           sudo apt-get update
-          sudo apt-get install use-my-tool-package-name
+          sudo apt-get install use-my-tool-package-name -y  # Adding '-y' to auto-confirm installations
 
       - name: Verify tool installation
         run: |
