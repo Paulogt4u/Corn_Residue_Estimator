@@ -24,6 +24,16 @@ jobs:
           source venv/bin/activate
           pip install -r requirements.txt
 
+      - name: Debug output
+        run: |
+          echo "List files in the current directory:"
+          ls -alh
+          echo "Check Python version:"
+          python --version
+          echo "Check installed packages:"
+          pip list
+
+
       - name: Run tests
         run: |
           source venv/bin/activate
