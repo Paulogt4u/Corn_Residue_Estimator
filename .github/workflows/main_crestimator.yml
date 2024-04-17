@@ -31,7 +31,12 @@ jobs:
         with:
           username: ${{ secrets.AZURE_USERNAME}}
           password: ${{ secrets.AZURE_PASSWORD}}
-
+      - name: Deploy to Azure Web App
+        uses: azure/webapps-deploy@v2
+        with:
+          app-name: 'CRestimator'
+          slot-name: 'Production'
+          publish-profile: ${{ secrets.AZURE_APP_PUBLISH_PROFILE }}
 
 # Notes and Links
 # Docs for Azure Web Apps Deploy action: https://github.com/Azure/webapps-deploy
